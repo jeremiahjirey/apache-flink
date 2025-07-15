@@ -1,21 +1,17 @@
 import os
 import json
-from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse
-from fastapi.templating import Jinja2Templates
-import httpx
+import requests
+from flask import Flask, render_template
 
-app = FastAPI()
-templates = Jinja2Templates(directory="templates")
+app = Flask(__name__)
 
-API_URL = os.getenv("TWEET_API_URL", "http://localhost:3000/tweets")  # default saat dev lokal
+API_URL = os.getenv("TWEET_API_URL", "http://localhost:3000/tweets")
 
-@app.get("/", response_class=HTMLResponse)
-async def home(request: Request):
+@app.route("/")
+def index():
     try:
-        async with httpx.AsyncClient() as client:
-            response = await client.get(API_URL)
-            tweets = response.json() if response.status_code == 200 else []
+        response = requests.get(API_URL)
+        tweets = response.json() if response.status_code == 200 else []
     except Exception as e:
         tweets = []
         print(f"Error fetching tweets: {e}")
@@ -31,12 +27,7 @@ async def home(request: Request):
         "values": list(counts.values())
     }
 
-    return templates.TemplateResponse("index.html", {
-        "request": request,
-        "tweets": tweets,
-        "chart_data": chart_data
-    })
+    return render_template("index.html", tweets=tweets, chart_data=chart_data)
 
 if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run("app:app", host="0.0.0.0", port=8000)
+    app.run(debug=True, host="0.0.0.0", port=8000)
