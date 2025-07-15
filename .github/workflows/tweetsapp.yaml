@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - dev
+    paths:
+        - .github/workflows/tweetsapp.yaml
+        - Dockerfile
 jobs:
   install:
     runs-on: ubuntu-latest
