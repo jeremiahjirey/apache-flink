@@ -3,7 +3,7 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - dev
+      - main
     paths:
         - .github/workflows/tweetsapp.yaml
         - Dockerfile

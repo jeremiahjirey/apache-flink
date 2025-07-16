@@ -1,53 +1,88 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" data-theme="light">
 <head>
-  <title>Live Tweets Dashboard</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    body { font-family: Arial; padding: 20px; }
-    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
-    th, td { border: 1px solid #ddd; padding: 8px; }
-    th { background-color: #f2f2f2; }
-    canvas { max-width: 600px; margin-top: 30px; }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TweetBoard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
 </head>
 <body>
-  <h1>Live Tweets Dashboard</h1>
+  <header>
+    <h1>TweetBoard</h1>
+    <button id="mode-toggle">🌓</button>
+  </header>
 
-  <canvas id="tweetChart"></canvas>
+  <section class="form-container">
+    <form id="tweet-form">
+      <input type="text" name="username" placeholder="Your name" required />
+      <textarea name="tweet" placeholder="What's happening?" required></textarea>
+      <button type="submit">Tweet</button>
+    </form>
+  </section>
 
-  <table>
-    <tr>
-      <th>Username</th>
-      <th>Message</th>
-      <th>Location</th>
-      <th>Timestamp</th>
-    </tr>
+  <section class="chart-container">
+    <h2>Tweet Count by User</h2>
+    <canvas id="tweetChart"></canvas>
+  </section>
+
+  <section class="tweets-container">
     {% for tweet in tweets %}
-    <tr>
-      <td>{{ tweet.username }}</td>
-      <td>{{ tweet.message }}</td>
-      <td>{{ tweet.location }}</td>
-      <td>{{ tweet.timestamp }}</td>
-    </tr>
+      <div class="tweet-card">
+        <strong>@{{ tweet.username }}</strong>
+        <p>{{ tweet.tweet }}</p>
+        <small>{{ tweet.created_at }}</small>
+      </div>
     {% endfor %}
-  </table>
+  </section>
 
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
-    const ctx = document.getElementById('tweetChart').getContext('2d');
+    const ctx = document.getElementById("tweetChart").getContext("2d");
     const chart = new Chart(ctx, {
-      type: 'bar',
+      type: "bar",
       data: {
-        labels: {{ chart_data.labels | tojson }},
+        labels: {{ chart_labels | tojson }},
         datasets: [{
-          label: 'Tweet Count per User',
-          data: {{ chart_data.values | tojson }},
-          backgroundColor: 'rgba(54, 162, 235, 0.6)',
-          borderColor: 'rgba(54, 162, 235, 1)',
-          borderWidth: 1
+          label: "Number of Tweets",
+          data: {{ chart_values | tojson }},
+          backgroundColor: "#007bff",
         }]
       },
-      options: { scales: { y: { beginAtZero: true } } }
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false }
+        }
+      }
+    });
+
+    const toggle = document.getElementById("mode-toggle");
+    const root = document.documentElement;
+
+    toggle.addEventListener("click", () => {
+      const current = root.getAttribute("data-theme");
+      const next = current === "light" ? "dark" : "light";
+      root.setAttribute("data-theme", next);
+    });
+
+    document.getElementById("tweet-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const username = form.username.value;
+      const tweet = form.tweet.value;
+
+      const response = await fetch("https://g9q41cdjsl.execute-api.us-east-1.amazonaws.com/dev/tweets", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, tweet })
+      });
+
+      if (response.ok) {
+        alert("Tweet posted!");
+        window.location.reload();
+      } else {
+        alert("Failed to post tweet!");
+      }
     });
   </script>
 </body>
