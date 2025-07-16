@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <title>TweetBoard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header>
+    <h1>TweetBoard</h1>
+    <div>
+      {% if request.path != '/login' and request.path != '/signup' %}
+        <a href="/logout" style="margin-right: 1rem;">Logout</a>
+      {% endif %}
+      <button id="mode-toggle">🌓</button>
+    </div>
+  </header>
+
+  {% block content %}{% endblock %}
+
+  <script>
+    const toggle = document.getElementById("mode-toggle");
+    toggle?.addEventListener("click", () => {
+      const theme = document.documentElement.getAttribute("data-theme");
+      const next = theme === "dark" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", next);
+      localStorage.setItem("theme", next);
+    });
+    document.documentElement.setAttribute("data-theme", localStorage.getItem("theme") || "light");
+  </script>
+</body>
+</html>

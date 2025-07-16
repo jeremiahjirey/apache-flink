@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="form-container">
+  <h2>Konfirmasi Akun</h2>
+  <form method="POST" action="/confirm">
+    <input type="email" name="email" placeholder="Email yang digunakan saat daftar" required />
+    <input type="text" name="code" placeholder="Kode verifikasi dari email" required />
+    <button type="submit">Konfirmasi</button>
+  </form>
+  <p>Belum daftar? <a href="/signup">Daftar di sini</a></p>
+</div>
+
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="form-container">
+  <h2>Daftar</h2>
+  <form method="POST" action="/signup">
+    <input type="text" name="name" placeholder="Nama lengkap" required />
+    <input type="email" name="email" placeholder="Email" required />
+
+    <div style="position: relative;">
+      <input type="password" name="password" id="password" placeholder="Password" required oninput="checkPassword()" />
+      <button type="button" onclick="togglePassword()" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer;">👁️</button>
+    </div>
+
+    <ul id="pw-rules">
+      <li id="rule-length">Password must be at least 8 characters</li>
+      <li id="rule-number">Use a number</li>
+      <li id="rule-lower">Use a lowercase letter</li>
+      <li id="rule-upper">Use an uppercase letter</li>
+      <li id="rule-symbol">Use a symbol</li>
+    </ul>
+
+    <button type="submit">Daftar</button>
+  </form>
+
+  <p>Sudah punya akun? <a href="/login">Login di sini</a></p>
+</div>
+
+<script>
+  function togglePassword() {
+    const pw = document.getElementById("password");
+    pw.type = pw.type === "password" ? "text" : "password";
+  }
+
+  function checkPassword() {
+    const pw = document.getElementById("password").value;
+    document.getElementById("rule-length").style.color = pw.length >= 8 ? "green" : "gray";
+    document.getElementById("rule-number").style.color = /\d/.test(pw) ? "green" : "gray";
+    document.getElementById("rule-lower").style.color = /[a-z]/.test(pw) ? "green" : "gray";
+    document.getElementById("rule-upper").style.color = /[A-Z]/.test(pw) ? "green" : "gray";
+    document.getElementById("rule-symbol").style.color = /[^A-Za-z0-9]/.test(pw) ? "green" : "gray";
+  }
+</script>
+
+{% endblock %}
