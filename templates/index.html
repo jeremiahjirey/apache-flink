@@ -3,7 +3,9 @@
 
 <div class="form-container">
   <form action="/post_tweet" method="post">
-    <input type="text" name="username" placeholder="Username" required />
+    <!-- Hidden input: username dari JWT session -->
+    <input type="hidden" name="username" value="{{ email }}">
+    
     <textarea name="tweet" placeholder="Apa yang kamu pikirkan?" required></textarea>
     <button type="submit">Tweet</button>
   </form>
@@ -38,4 +40,5 @@
     }
   });
 </script>
+
 {% endblock %}
